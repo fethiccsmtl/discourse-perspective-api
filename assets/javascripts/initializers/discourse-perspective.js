@@ -10,24 +10,13 @@ function initialize(api) {
     dialog: service(),
     siteSettings: service(),
 
-    perspectiveSave(force) {
-      const result = this.save(force);
-
-      // it's valid for save() to return null since we do that in core,
-      // handle that here because sometimes we return a promise
-      if (result != null && typeof result.then === "function") {
-        result.finally(() => this.set("disableSubmit", false));
-      } else {
-        this.set("disableSubmit", false);
-      }
-    },
-
     save(force) {
+
       if (this.disableSubmit) {
         return;
       }
 
-      const result = this._super(force);
+      const originalSave = this._super.bind(this);
 
       const perspectiveEnabled = this.siteSettings.perspective_enabled;
       const perspectiveNotifyUser =
@@ -46,50 +35,52 @@ function initialize(api) {
 
         if (check) {
           this.set("disableSubmit", true);
-          return this.perspectiveCheckToxicity(this.model, force);
+
+          const concat = ["title", "raw", "reply"]
+            .map((item) => this.model.get(item))
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+
+          return ajax("/perspective/post_toxicity", {
+            type: "POST",
+            data: { concat },
+          })
+            .then((response) => {
+              if (response && response["score"] !== undefined) {
+                this.dialog.confirm({
+                  message: i18n("perspective.perspective_message"),
+                  confirmButtonLabel: "perspective.composer_edit",
+                  confirmButtonClass: "btn-primary perspective-edit-post",
+                  cancelButtonLabel: "perspective.composer_continue",
+                  cancelButtonClass: "perspective-continue-post",
+                  didConfirm: () => {
+                    if (this.isDestroying || this.isDestroyed) {
+                      return;
+                    }
+                    this.set("disableSubmit", false);
+                  },
+                  didCancel: () => {
+                    this.set("disableSubmit", false);
+                    originalSave(force);
+                  },
+                });
+              } else {
+                this.set("disableSubmit", false);
+                originalSave(force);
+              }
+            })
+            .catch(() => {
+              // fail silently
+              this.set("disableSubmit", false);
+              originalSave(force);
+            });
         }
       }
 
-      return result;
+      return this._super(force);
     },
 
-    perspectiveCheckToxicity(composer, force) {
-      const concat = ["title", "raw", "reply"]
-        .map((item) => composer.get(item))
-        .filter(Boolean)
-        .join(" ")
-        .trim();
-
-      return ajax("/perspective/post_toxicity", {
-        type: "POST",
-        data: { concat },
-      })
-        .then((response) => {
-          if (response && response["score"] !== undefined) {
-            this.dialog.confirm({
-              message: i18n("perspective.perspective_message"),
-              confirmButtonLabel: "perspective.composer_edit",
-              confirmButtonClass: "btn-primary perspective-edit-post",
-              cancelButtonLabel: "perspective.composer_continue",
-              cancelButtonClass: "perspective-continue-post",
-              didConfirm: () => {
-                if (this.isDestroying || this.isDestroyed) {
-                  return;
-                }
-
-                this.set("disableSubmit", false);
-              },
-              didCancel: () => this.perspectiveSave(force),
-            });
-          } else {
-            this.perspectiveSave(force);
-          }
-        })
-        .catch(() => {
-          // fail silently
-          this.perspectiveSave(force);
-        });
-    },
   });
 }
 
