@@ -1,0 +1,17 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+ru:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_perspective: "Плагин Discourse Perspective"
+  js:
+    perspective:
+      perspective_message: "То, что вы собираетесь разместить, может быть расценено как грубость или неуважение к другим, и может быть помечено для проверки."
+      composer_edit: "Вернуться к редактированию"
+      composer_continue: "Продолжить публикацию"

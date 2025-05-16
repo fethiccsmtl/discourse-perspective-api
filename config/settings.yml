@@ -1,0 +1,31 @@
+discourse_perspective:
+  perspective_enabled:
+    default: false
+    client: true
+  perspective_notify_posting_min_toxicity_enable:
+    default: false
+    client: true
+  perspective_flag_post_min_toxicity_enable: true
+  perspective_flag_post_min_toxicity:
+    default: 0.9
+  perspective_notify_posting_min_toxicity:
+    default: 0.85
+  perspective_toxicity_model:
+    default: "standard"
+    type: enum
+    choices:
+      - standard
+      - severe toxicity (experimental)
+  perspective_google_api_key:
+    default: ""
+  perspective_check_private_message:
+    default: false
+    client: true
+  perspective_check_secured_categories:
+    default: false
+    client: true
+  perspective_backfill_posts:
+    client: true
+    default: false
+  perspective_historical_inspection_period:
+    default: 300

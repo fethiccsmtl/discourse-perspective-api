@@ -1,0 +1,17 @@
+# WARNING: Never edit this file.
+# It will be overwritten when translations are pulled from Crowdin.
+#
+# To work with us on translations, join this project:
+# https://translate.discourse.org/
+
+ja:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_perspective: "Discourse 見解"
+  js:
+    perspective:
+      perspective_message: "あなたが投稿しようとしているものは、他のユーザーに失礼または無礼と見なされ、要レビューとして通報される可能性があるようです。"
+      composer_edit: "戻って編集する"
+      composer_continue: "投稿を続ける"
